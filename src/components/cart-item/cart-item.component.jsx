@@ -17,8 +17,3 @@ const CartItem = ({ item: { imageUrl, price, name, quantity} }) => {
 )};
 
 export default CartItem;
-// const mapDispatchToProps = dispatch => ({
-//     addItem: item => dispatch(addItem(item))
-// })
-
-// export default connect(null, mapDispatchToProps)(CartItem);
