@@ -12,43 +12,18 @@ import CheckoutPage from './pages/checkout/checkout.component'
 
 import Header from './components/header/header.component'
 import { selectCurrentUser } from './redux/user/user.selectors'
-
-import { auth, createUserProfileDocument } from './firebase/firebase.utils'
-import { setCurrentUser } from './redux/user/user.actions'
+import { checkUserSession } from './redux/user/user.actions';
 
 import { selectCollectionsForPreview } from './redux/shop/shop.selectors'
 
 class App extends React.Component {
 
-  unsuscribeFromAuth = null;
+  unsubscribeFromAuth = null;
 
   componentDidMount(){
+    const { checkUserSession } = this.props;
 
-    const {setCurrentUser, collectionsArray} = this.props
-
-    // apps listening to auth state changes on firebase backend
-    this.unsuscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
-      
-      if(userAuth){
-        const userRef = await createUserProfileDocument(userAuth); 
-
-        userRef.onSnapshot(snapShot =>{
-          setCurrentUser({
-            id: snapShot.id,
-            ...snapShot.data()
-          });
-        });
-      }
-      else{
-        setCurrentUser(userAuth);
-        // addCollectionAndDocuments('collections', collectionsArray.map(({title, items}) => ({title, items})))
-      }
-      
-    })
-  }
-
-  componentWillUnmount(){
-    this.unsuscribeFromAuth();
+    checkUserSession();
   }
 
   render(){
@@ -75,13 +50,13 @@ class App extends React.Component {
     );
   }
 }
-const mapStateToPropps =  createStructuredSelector({
+const mapStateToProps =  createStructuredSelector({
   currentUser: selectCurrentUser,
   collectionsArray: selectCollectionsForPreview
 })
 
-const mapDispatchToPropps = dispatch => ({
-  setCurrentUser: user => dispatch(setCurrentUser(user))
+const mapDispatchToProps = dispatch => ({
+  checkUserSession: () => dispatch(checkUserSession())
 })
 
-export default connect(mapStateToPropps, mapDispatchToPropps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);
